@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useContext, useState } from "react";
 import './TextSettingStyle.css'
 import { UIContext } from "../../context/UIContext";
+import { FontEnum } from "../../enum/fontEnum";
 
 interface TextSettingPopupUIProps {
   content: string;
@@ -19,21 +20,6 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
 
   const uiContext = useContext(UIContext);
   const element = uiContext?.state.selectedElement;
-  // Font Selector
-  const FONTS = [
-    "Arial",
-    "Verdana",
-    "Times New Roman",
-    "Courier New",
-    "Georgia",
-    "Palatino",
-    "Garamond",
-    "Bookman",
-    "Comic Sans MS",
-    "Trebuchet MS",
-    "Arial Black",
-    "Impact"
-  ];
 
   function applyFontFamily(fontFamily: string){
     if (!element) return;
@@ -134,7 +120,7 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
                 onChange={(e) => applyFontFamily(e.target.value)}
                 className="font-selector"
               >
-                {FONTS.map((font) => (
+                {Object.values(FontEnum).map((font) => (
                   <option key={font} value={font} style={{ fontFamily: font }}>
                     {font}
                   </option>
