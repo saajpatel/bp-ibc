@@ -35,7 +35,6 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
   const [fontWeight, setFontWeight] = useState(element ? Number(window.getComputedStyle(element).fontWeight) : 400);
   
   function toggleBold() {
-
     if (!element) return;
     const isBold = fontWeight >= 700;
     const newFontWeight = isBold ? 400 : 700;
@@ -209,6 +208,16 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
               <ul>
                 <li>
                   <button onClick={toggleBold}>B</button>
+
+                  <div>
+                    <button onClick={() => incrementFontWeight('dec')}>-</button>
+                    <input 
+                      type="number" value={fontWeight} min="100" max="900" step="100" style={{width: "40px", textAlign: "center"}}
+                      onChange={(e) => setFontWeight(Number(e.target.value))}
+                      onKeyDown={(e) => changeFontWeight(e)}
+                      />
+                    <button onClick={() => incrementFontWeight('inc')}>+</button>
+                  </div>
                 </li>
                 <li>
                   <button onClick={toggleItalic}>I</button>
