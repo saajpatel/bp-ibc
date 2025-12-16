@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import sectionRoute from './routes/sectionRoute';
 import pageRoute from './routes/pageRoute'
-import siteRoute from './routes/siteRoute'
+import draftRoute from './routes/draftRoute'
 
 dotenv.config();
 
@@ -25,4 +25,4 @@ app.listen(PORT, () => {
 
 app.use('/api', sectionRoute);
 app.use('/api', pageRoute);
-app.use('/api', siteRoute);
+app.use('/api', draftRoute);
