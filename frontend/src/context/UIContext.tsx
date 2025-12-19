@@ -3,6 +3,9 @@ import type { ReactNode } from "react";
 import TextSettingPopupUIComponent from "../components/textsetting/TextSettingPopupUIComponent";
 import type { UIAction } from "../model/uiActionModel";
 import type { UIState } from "../model/uiStateModel";
+import { SetUnsaved } from "../features/siteStatus";
+import { store } from "../store/store";
+
 
 const initialState: UIState = {
     popupContent: null,
@@ -61,11 +64,20 @@ function UIContextProvider({ children }: { children: ReactNode }) {
                 selection.addRange(range);
             }
 
+            let unsavedLock = false;
+
             // event handler for changes to text 
             const handleTextChanges = () => {
                 // change border if text has been edited, otherwise keep original color (blue)
                 if (element.innerText !== initialText) {
                     element.style.border = '5px solid #FFD700';
+
+                    // prevent multiple setunsaved calls per edit session
+                    if (!unsavedLock) {
+                        store.dispatch(SetUnsaved());
+                        unsavedLock = true;
+                    }
+
                 } else {
                     element.style.border = '2 px solid blue';
                 }
