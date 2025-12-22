@@ -14,7 +14,9 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
   const savedSelectionRef = useRef<Range | null>(null);
   const uiContext = useContext(UIContext);
   const state = uiContext?.state;
-  const element = uiContext?.state.selectedElement;
+
+  if (!state) return;
+  const element = state.selectedElement;
 
   // states
   const [fontWeight, setFontWeight] = useState(element ? Number(window.getComputedStyle(element).fontWeight) : 400); // font weight / bold 
@@ -28,8 +30,8 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
   const applyStyleToSelection = (property: string, value: string) => {
         const selection = window.getSelection();
         if (!selection || selection.rangeCount === 0) {
-            if (state.selectedElement) {
-                state.selectedElement.style.setProperty(property, value);
+            if (element) {
+                element.style.setProperty(property, value);
             }
             return;
         }
@@ -37,8 +39,8 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
         const range = selection.getRangeAt(0);
         
         if (range.collapsed) {
-            if (state.selectedElement) {
-                state.selectedElement.style.setProperty(property, value);
+            if (element) {
+                element.style.setProperty(property, value);
             }
             return;
         }
