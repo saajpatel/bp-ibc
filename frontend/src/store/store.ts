@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit"
-import siteStatusReducer from "../features/siteStatus";
+import siteStatusReducer from "../features/siteStatus/siteStatus.slices";
 
 export const store = configureStore({
     reducer: {
