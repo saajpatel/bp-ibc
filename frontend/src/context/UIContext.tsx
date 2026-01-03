@@ -5,7 +5,7 @@ import type { UIAction } from "../model/uiActionModel";
 import type { UIState } from "../model/uiStateModel";
 import { SetUnsaved } from "../features/siteStatus";
 import { store } from "../store/store";
-
+import { AutoSave } from "../features/autoSave/autosave";
 
 const initialState: UIState = {
     popupContent: null,
@@ -32,6 +32,7 @@ export const UIContext = createContext<{
 
 function UIContextProvider({ children }: { children: ReactNode }) {
     const [state, dispatch] = useReducer(uiReducer, initialState);
+    AutoSave();
 
     useEffect(() => {
         function showPopupFor(element: HTMLElement) {
