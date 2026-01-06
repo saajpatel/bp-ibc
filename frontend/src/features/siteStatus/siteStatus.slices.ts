@@ -1,9 +1,5 @@
-import {createSlice } from "@reduxjs/toolkit"
-
-interface SiteStatusState {
-    saveStatus: "saved" | "unsaved";
-    publishedStatus: "published" | "unpublished";
-}
+import { createSlice } from "@reduxjs/toolkit"
+import type { SiteStatusState } from "./siteStatus.types";
 
 // can be tweaked later, but this assumes no changes have been made initially
 const initialState: SiteStatusState = {
