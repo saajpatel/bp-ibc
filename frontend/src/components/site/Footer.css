@@ -5,7 +5,7 @@ footer {
     background: #25374D;
     width: 100%;
     padding: 16px 8px;
-    text-align: center;
+    white-space: nowrap;
 }
 
 .footerDesc1 {
