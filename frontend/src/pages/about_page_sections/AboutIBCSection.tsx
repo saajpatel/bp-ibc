@@ -1,8 +1,8 @@
-import './AboutIBCSection.css'; 
+import './AboutIBCSection.css';
 
 function AboutIBCSection(){
     return (
-        <section>
+        <section id="about-ibc">
             <h2>About Itty Bitty Critters</h2>
             <p>
                 Itty Bitty Critters is a wildlife education and support organization dedicated to helping
