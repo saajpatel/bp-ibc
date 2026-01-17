@@ -1,5 +1,6 @@
 import Footer from '../components/site/Footer'
-import AboutIBCSection from './about_page_sections/AboutIBCSection'
+import AboutIBCSection from '../components/site/AboutIBCSection'
+import MissionSection from '../components/site/MissionSection'
 
 function AboutPage() {
     return (
@@ -7,6 +8,7 @@ function AboutPage() {
             <h1>Welcome to the About Page</h1>
             <p>This is the main content area.</p>
             <AboutIBCSection/>
+            <MissionSection/>
             <Footer/>
         </>
     )

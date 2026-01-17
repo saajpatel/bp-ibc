@@ -10,7 +10,7 @@ function AboutIBCSection(){
                 focus is not just rescue — but prevention, education, and coexistence.
             </p>
         </section>
-    )
+    );
 }
 
 export default AboutIBCSection;
