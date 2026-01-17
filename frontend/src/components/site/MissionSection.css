@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
-#our-mission > * {
+#our-mission * {
     margin: 0;
     padding: 0;
     font-family: "DM Sans", sans-serif;
 }
 
-section {
+#our-mission {
     height: 33.68vw;
     background-color: #3b4d3f;
     position: relative;
 }
 
-#our-mission > h2 {
+#our-mission h2 {
     color: #ffffff;
     font-size: 4.7vw;
     font-weight: 500;
@@ -21,7 +21,7 @@ section {
     left: 8.42vw;
 }
 
-#our-mission > p {
+#our-mission p {
     width: 67.9vw;
     color: #DCDACD;
     font-size: 1.57vw;

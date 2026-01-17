@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
-#about-ibc > * {
+#about-ibc * {
     margin: 0;
     padding: 0;
     font-family: "DM Sans", sans-serif;
@@ -12,7 +12,7 @@
     position: relative;
 }
 
-#about-ibc > h2 {
+#about-ibc h2 {
     color: #324436;
     font-size: 4.7vw;
     font-weight: 700;
@@ -21,7 +21,7 @@
     left: 8.27vw;
 }
 
-#about-ibc > p {
+#about-ibc p {
     width: 64vw;
     color: #324436;
     font-size: 1.57vw;
