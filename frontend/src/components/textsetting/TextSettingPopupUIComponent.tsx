@@ -27,25 +27,10 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
   const [underline, toggleUnderline] = useState(false);
   const [alignment, setAlignmentState] = useState(element ? (window.getComputedStyle(element).textAlign) : 'left'); // text alignment 
   
-  const OFFVAL = "0"; // constant because not sure if "0" or "-1" is better for off, needs to be a string to hold value (ex. bold 700 pr color)
+  const OFFVAL = "0"; // constant because not sure if "0" or "-1" is better for off, needs to be a string to hold value (ex. bold 700)
 
-
-  function removeAllStyling(element: HTMLElement | null) {
-    if (!element) return;
-    
-    // Get the plain text content
-    const plainText = element.textContent || '';
-    
-    // Replace the element's content with plain text
-    element.innerHTML = '';
-    element.textContent = plainText;
-    
-    // Remove all inline styles
-    element.removeAttribute('style');
-  }
-
-  const stylingTypes = ["bold", "italic", "underline", "strike", "color", "font-family", "font-size"];
-  const propertyToType: Record<string, string | undefined> = {
+  const stylingTypes = ["bold", "italic", "underline", "strike", "fontFamily", "fontSize"]; // everything should depend on this
+  const propertyToType: Record<string, string | undefined> = { // this can be refactored out.
     'font-weight': 'bold',
     'font-style': 'italic',
     'text-decoration-line': 'underline',
@@ -62,7 +47,7 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       this.style = style;
       this.val = val;
     }
-
+    // unused
     public eq(other: Update): boolean {
       return this.idx == other.idx && this.style == other.style && this.val == other.val;
     }
@@ -71,62 +56,116 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
     }
   }
 
-  function mergeUpdates() {
-    const updates = updatesRef.current;
-    const queue: Record<string, Update[]> = { // each element stores an update ig.
-      'bold': [],
-      'italic': [],
-      'underline': [],
-      'strike': [],
-      'color': [],
-      'fontFamily': [],
-      'fontSize': [],
-    };
-    let newLeftUpdates: Update[] = []; // cleaned only the sets.
-    for(let i = 0; i < updates.length; i++) { // forwards
+  // TODO: Improve by using binary search instead of linear search later, also refactor the whole thing. Control structure sucks right now
+  function sweepScan(start: number, end: number, style: string, val: string, updates: Update[]) {
+    // console.log("sweepScan called with: ", start, end, style, val, updates);
+    let started = false, ended = false;
+    let endVal = OFFVAL;
+    let lastIdx = 0;
+    let newUpdates: Update[] = [];
+    let state = OFFVAL; // could be merged with endVal likely?
+    for(let i = 0; i < updates.length; i++) { // convert to a while loop later for cleaner code.
+      // console.log("sweepScan processing: ", updates[i]);
+      // for(let i = 0; i < newUpdates.length; i++) {
+      //   console.log("sweepScan has: ", newUpdates[i]);
+      // }
+      
+      if(ended == true) { // after the range
+        newUpdates.push(updates[i]);
+        continue;
+      }
+      if(started == true) { // in the range
+        if(updates[i].idx > end) {
+          console.log("Adding end at ", end, " with val ", endVal, "update ", updates[i], " state ", state, " what ", updates[i-1]);
+          if(state == OFFVAL) newUpdates.push(new Update(end, style, endVal));
+          newUpdates.push(updates[i]);
+          // state = updates[i].val as string;
+          ended = true;
+        }
+        else if(updates[i].idx == end && updates[i].style == style) {
+          if(state != endVal) newUpdates.push(new Update(end, style, endVal)); 
+          ended = true;
+        }
+        else {
+          if(updates[i].style == style) endVal = updates[i].val || OFFVAL; // store what val it should swap to when ending.
+          // basically, if it overlaps fully endVal is OFFVAL, but if it ends inside another interval (A), endVal will be the val of the A, and then the part outside of the new interval will still exist!
+          else {
+            newUpdates.push(updates[i]);
+            // state = updates[i].val as string;
+          }
+        }
+      }
+      // before the range
+      else if(updates[i].style == style && start == updates[i].idx) { // eql
+        if(state != val) newUpdates.push(new Update(start, style, val));
+        endVal = updates[i].val || OFFVAL;
+        started = true;
+      }
+      else if(lastIdx <= start && start < updates[i].idx) { // start between first and last
+        started = true;
+        if(state != val) {
+          newUpdates.push(new Update(start, style, val));
+          endVal = updates[i].val || OFFVAL;
+        }
+        if(updates[i].idx > end) {
+          if(state == OFFVAL) newUpdates.push(new Update(end, style, OFFVAL));
+          ended = true;
+          newUpdates.push(updates[i]);
+        }
+        
+        else if(updates[i].style == style) endVal = updates[i].val || OFFVAL; // same logic as started == true
+        else newUpdates.push(updates[i]);
+      }
+      else {
+        newUpdates.push(updates[i]);
+        if(updates[i].style == style) endVal = updates[i].val || OFFVAL;
+        lastIdx = updates[i].idx;
+      }
+      state = updates[i].val || OFFVAL;
+    }
+    if(!started) newUpdates.push(new Update(start, style, val));
+    if(!ended) newUpdates.push(new Update(end, style, endVal));
+    return newUpdates;
+  }
+
+  function mergeUpdates(updates: Update[]): Update[] {
+    console.log("Merging updates: ", updates);
+    const nums: Record<string, number> = {};
+    const vals: Record<string, string> = {};
+    for (let i = 0; i < stylingTypes.length; i++) {
+      nums[stylingTypes[i]] = 0;
+      vals[stylingTypes[i]] = "";
+    }
+
+    let newUpdates: Update[] = [];
+    for(let i = 0; i < updates.length; i++) {
+      let styleKey = updates[i].style as keyof typeof nums;
       if(updates[i].val == OFFVAL) {
-        const el = queue[updates[i].style as keyof typeof queue].pop();
-        if(el) newLeftUpdates.push(el);
-        else console.log("Invalid Updates! (1)");
+        nums[styleKey] -= 1; // popping back
+        if(nums[styleKey] == 0) newUpdates.push(updates[i]); // this is when the style is actually removed
+        if(nums[styleKey] < 0) nums[styleKey] = 0;
         continue;
       }
-      let styleQueue = queue[updates[i].style as keyof typeof queue];
-      if(styleQueue.length == 0) queue[updates[i].style as keyof typeof queue].push(updates[i]);
-      else if(styleQueue[0].val == OFFVAL) console.log("Invalid Updates! (2)");
-      else if(styleQueue[0].val != updates[i].val && styleQueue[0].idx != updates[i].idx) queue[updates[i].style as keyof typeof queue].push(updates[i]); // only push if val and idx are diff because otherwise its a redundant update
-      else if(styleQueue[0].val != updates[i].val && styleQueue[0].idx == updates[i].idx) console.log("Invalid Updates! (3)");
-    }
-    newLeftUpdates.sort((a, b) => a.idx - b.idx); // I think this does need to be sorted since nested styles break order.
-    let newRightUpdates: Update[] = [];
-    for(let i = updates.length-1; i >= 0; i--) {
-      console.log("Processing", updates[i]);
-      if(updates[i].val != OFFVAL) {
-        console.log("its",queue[updates[i].style as keyof typeof queue]);
-        const el = queue[updates[i].style as keyof typeof queue].pop();
-        if(el) newRightUpdates.push(el);
-        else console.log("Invalid Updates! (4)");
-        continue;
+      if(nums[styleKey] <= 0) { // It is not styled
+        newUpdates.push(updates[i]); // the styling must be applied
+        nums[styleKey] = 1;
+        vals[styleKey] = updates[i].val || OFFVAL;
       }
-      let styleQueue = queue[updates[i].style as keyof typeof queue];
-      if(styleQueue.length == 0) queue[updates[i].style as keyof typeof queue].push(updates[i]);
+      else if(vals[styleKey] == updates[i].val) nums[styleKey]++;
+      else if(vals[styleKey] != updates[i].val) {
+        nums[styleKey] = 1;
+        vals[styleKey] = updates[i].val || OFFVAL;
+        newUpdates.push(updates[i]); // change to new val
+      }
+      
     }
-    let finalUpdates: Update[] = newLeftUpdates.concat(newRightUpdates);
-    finalUpdates.sort((a, b) => a.idx - b.idx);
-    updatesRef.current = finalUpdates;
-    console.log(finalUpdates);
-    return finalUpdates;
+    console.log(newUpdates);
+    return newUpdates;
   }
 
   function renderStyledDivs(text: string, updates: Update[]) {
-    const state = {
-      bold: OFFVAL,
-      italic: OFFVAL,
-      underline: OFFVAL,
-      strike: OFFVAL,
-      color: OFFVAL,
-      fontFamily: OFFVAL,
-      fontSize: OFFVAL,
-    };
+    const state: Record<string, string> = {};
+    for (let i = 0; i < stylingTypes.length; i++) state[stylingTypes[i]] = OFFVAL;
 
     const toStyleString = () => { // inline styling for now
       let styles = "";
@@ -134,10 +173,9 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       if(state.italic != OFFVAL) styles+='font-style:italic;';
       const decorations = [
         state.underline != OFFVAL ? 'underline' : '',
-        state.strike != OFFVAL ? 'line-through' : '',
+        state.strike != OFFVAL ? 'line-through' : '', // getting ready for strikethrough text, not implemented yet.
       ].filter(Boolean).join(' ');
       if(decorations) styles+=`text-decoration:${decorations};`;
-      if(state.color != OFFVAL) styles+='color:'+state.color+';';
       if(state.fontFamily != OFFVAL) styles+='font-family:'+state.fontFamily+';';
       if(state.fontSize != OFFVAL) styles+='font-size:'+state.fontSize+';';
       styles+='display:inline-block;'; // not sure if needed, maybe put in an outside css file?
@@ -204,12 +242,14 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       const token = propertyToType[property]; // holds the queue for now, remove and replace with a db query
       if (token) {
         let updates = updatesRef.current;
-        updates.push(new Update(start, token, value || "1"));
-        updates.push(new Update(end, token, OFFVAL));
-        updates.sort((a, b) => a.idx - b.idx); // Lazy way, instead should do binary insertion for O(logn) instead of O(nlogn).
+        // updates.push(new Update(start, token, value || "1"));
+        // updates.push(new Update(end, token, OFFVAL));
+        // updates.sort((a, b) => a.idx - b.idx); // Lazy way, instead should do binary insertion for O(logn) instead of O(nlogn).
+        console.log('stylingUpdates presweep:', start, " ", token, " ", end, " ", value, " ", updates);
+        updates = sweepScan(start, end, token, value, updates);
         console.log('stylingUpdates premerge:', start, " ", token, " ", end, " ", updates);
-        updates = mergeUpdates();
-        console.log('stylingUpdates:', start, " ", token, " ", end, " ", updates);
+        updates = mergeUpdates(updates);
+        // console.log('stylingUpdates:', start, " ", token, " ", end, " ", updates);
         if (element) {
           element.setAttribute('data-styling-updates', JSON.stringify(updates)); // remove, and replace with a db query and an unpacking function if needed
           element.innerHTML = renderStyledDivs(element.textContent || '', updates);
