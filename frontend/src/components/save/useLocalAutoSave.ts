@@ -1,39 +1,61 @@
+import type { RefObject } from 'react';
 import { useEffect } from 'react'
 
 // Value represented in seconds
-const autoSaveInterval = 10;    // e,g. 10 = call the local auto save every 30s
+const autoSaveInterval = 10; // e.g. 10 = call the local auto save every 10s
+const legacyKeyPrefix = 'Saved Element #';
 
-function LocalAutoSave(){
+function useLocalAutoSave(
+  storageKey: string,
+  rootRef?: RefObject<HTMLElement | null>
+) {
   useEffect(() => {
-    const localAutoSave = (() => {
-      let sectionNumber : number = 1; // All stored elements have a uniquely numbered key where its contents are stored.
-    
-      // Gets an array of all elements on page with the 'data-editable' attribute.
-      const editableElements = document.body.querySelectorAll('[data-editable]');
+    const localAutoSave = () => {
+      const root = rootRef?.current ?? document.body;
+      const pageElements = Array.from(
+        root.querySelectorAll(
+          '[data-editable][data-editable-leaf="true"]'
+        )
+      );
 
-      // Checks if local storage is full before setting an element.
+      if (!pageElements.length) {
+        return;
+      }
+
+      const pageSnapshot = pageElements.map((editableElement) => ({
+        id: editableElement.getAttribute('data-editable-id') ?? '',
+        text: editableElement.textContent ?? '',
+      }));
+
       try {
-        for (const editableElement of editableElements){
-          localStorage.setItem("Saved Element #" + sectionNumber, editableElement.outerHTML);
-          sectionNumber++;
+        localStorage.setItem(storageKey, JSON.stringify(pageSnapshot));
+
+        Object.keys(localStorage)
+          .filter((key) => key.startsWith(legacyKeyPrefix))
+          .forEach((key) => localStorage.removeItem(key));
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name === 'QuotaExceededError') {
+          console.error('Local storage exceeded!');
         }
       }
-      catch (error : unknown){
-        if (error instanceof Error && error.name === "QuotaExceededError"){
-          console.error("Local storage exceeded!");
-        }
-      }
-
-      sectionNumber = 1;
-    })
-
+    };
 
     const localAutoSaveCall = setInterval(localAutoSave, autoSaveInterval * 1000);
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        localAutoSave();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
+      localAutoSave();
       clearInterval(localAutoSaveCall);
-    }
-  }, [])
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [storageKey, rootRef]);
 }
 
-export default LocalAutoSave;
+export default useLocalAutoSave;
