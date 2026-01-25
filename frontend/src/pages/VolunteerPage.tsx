@@ -4,6 +4,7 @@ import whiteArrow from '../assets/white-arrow.svg';
 import greenBg from '../assets/green-backdrop.svg'; 
 import Navbar from '../components/site/Navbar'
 import Footer from '../components/site/Footer'
+import VolunteerHelp from '../components/site/VolunteerHelp'
 
 function VolunteerPage() {
 
@@ -14,6 +15,7 @@ function VolunteerPage() {
     return (
         <>            
             <Navbar/> 
+<<<<<<< HEAD
             
             <div id="info-sec" style={{backgroundColor: "#f5edea", height: "400px", margin: "0"}}>
                 <div id="info-text-container">
@@ -52,6 +54,11 @@ function VolunteerPage() {
                     </div>
                 </div>
             </div>
+=======
+            <h1>Welcome to the Volunteer Page</h1>
+            <p>This is the main content area.</p>
+            <VolunteerHelp/>
+>>>>>>> main
             <Footer/>
         </>
     )
