@@ -29,13 +29,14 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
   const OFFVAL = "0"; // constant because not sure if "0" or "-1" is better for off, needs to be a string to hold value (ex. bold 700)
 
   const stylingTypes = ["bold", "italic", "underline", "strike", "fontFamily", "fontSize"]; // everything should depend on this
-  const isInvertible = ["bold", "italic", "underline"];
+  const isInvertible = ["bold", "italic", "underline", "strike"];
   const propertyToType: Record<string, string | undefined> = { // this can be refactored out.
     'font-weight': 'bold',
     'font-style': 'italic',
     'text-decoration-line': 'underline',
     'font-family': 'fontFamily',
     'font-size': 'fontSize',
+    'strike': 'strike',
   };
 
   class Update {
@@ -47,30 +48,18 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       this.style = style;
       this.val = val;
     }
-    // unused
-    public eq(other: Update): boolean {
-      return this.idx == other.idx && this.style == other.style && this.val == other.val;
-    }
-    public eqInvr(other: Update): boolean {
-      return this.idx == other.idx && this.style == other.style && (this.val == OFFVAL && other.val != OFFVAL || this.val != OFFVAL && other.val == OFFVAL);
-    }
   }
 
-  // Inserts an update.
+  // Inserts an update, and shouldn't insert any redundant updates.
   // TODO: Improve by using binary search instead of linear search later, also refactor the whole thing. Control structure sucks right now
   function insertUpdate(start: number, end: number, style: string, val: string, updates: Update[]) {
     // console.log("insertUpdate called with: ", start, end, style, val, updates);
     let started = false, ended = false;
     let endVal = OFFVAL;
-    let lastIdx = 0;
+    let endValid = false; // if endVal is valid
     let newUpdates: Update[] = [];
     let state = OFFVAL; // could be merged with endVal likely?
     for(let i = 0; i < updates.length; i++) { // convert to a while loop later for cleaner code.
-      // console.log("insertUpdate processing: ", updates[i]);
-      // for(let i = 0; i < newUpdates.length; i++) {
-      //   console.log("insertUpdate has: ", newUpdates[i]);
-      // }
-      
       if(ended == true) { // after the range
         newUpdates.push(updates[i]);
         continue;
@@ -78,13 +67,13 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       if(started == true) { // in the range
         if(updates[i].idx > end) {
           // console.log("Adding end at ", end, " with val ", endVal, "update ", updates[i], " state ", state, " what ", updates[i-1]);
-          if(state != endVal) newUpdates.push(new Update(end, style, endVal));
+          if(endValid && val != endVal) newUpdates.push(new Update(end, style, endVal));
           newUpdates.push(updates[i]);
-          // state = updates[i].val as string;
           ended = true;
         }
         else if(updates[i].idx == end && updates[i].style == style) {
-          if(state != endVal) newUpdates.push(new Update(end, style, endVal)); 
+           // one is off, other is on, they cancel
+          if(!(updates[i].val == OFFVAL && endVal != OFFVAL || updates[i].val != OFFVAL && endVal == OFFVAL)) newUpdates.push(updates[i]);
           ended = true;
         }
         else {
@@ -92,36 +81,43 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
           // basically, if it overlaps fully endVal is OFFVAL, but if it ends inside another interval (A), endVal will be the val of the A, and then the part outside of the new interval will still exist!
           else {
             newUpdates.push(updates[i]);
-            // state = updates[i].val as string;
           }
         }
       }
       // before the range
       else if(updates[i].style == style && start == updates[i].idx) { // eql
-        if(state != val) newUpdates.push(new Update(start, style, val));
-        if(updates[i].style == style) endVal = updates[i].val || OFFVAL;
+        if(state != val && !(val == OFFVAL && state == OFFVAL)) newUpdates.push(new Update(start, style, val));
+        if(updates[i].style == style) {
+          endVal = updates[i].val || OFFVAL; // if(val != OFFVAL) is because of inversions (turning off a style)
+          endValid = true;
+        }
         started = true;
       }
-      else if(lastIdx <= start && start < updates[i].idx) { // start between first and last
+      else if(start < updates[i].idx) { // start between first and last
         started = true;
         if(state != val) { // if starting isn't redundant
           newUpdates.push(new Update(start, style, val));
         }
         if(updates[i].idx > end) { // ends before this update
-          console.log("endval is ", endVal, " state ", state);
+          // console.log("endval is ", endVal, " state ", state);
           if(val != endVal) newUpdates.push(new Update(end, style, endVal)); // if ending isn't reundant
           ended = true; 
           newUpdates.push(updates[i]);
-        }
+        } // might be missing logic for if(updates[i].idx == end && updates[i].style == style) here lol
         else {
-          if(updates[i].style == style) endVal = updates[i].val || OFFVAL; // same logic as started == true
+          if(updates[i].style == style) {
+            endVal = updates[i].val || OFFVAL;
+            endValid = true;
+          }
           else newUpdates.push(updates[i]);
         }
       }
       else {
         newUpdates.push(updates[i]);
-        if(updates[i].style == style) endVal = updates[i].val || OFFVAL;
-        lastIdx = updates[i].idx;
+        if(updates[i].style == style) {
+          endVal = updates[i].val || OFFVAL;
+          endValid = true;
+        }
       }
       if(updates[i].style == style) state = updates[i].val || OFFVAL;
     }
@@ -132,16 +128,18 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
 
   // Check if it's fully overlapping (and thus needs to be an inverse)
   function fullOverlapCheck(start: number, end: number, style: string, updates: Update[]) {
-    if(!isInvertible.includes(style)) return false;
+    if(!isInvertible.includes(style) || updates.length == 0) return false;
     let started = false, fullOverlap = true;
     let state = OFFVAL;
-    for(let i = 0; i < updates.length; i++) { 
-      if(updates[i].idx >= start) started = true;
+    let curIdx = updates[0].idx, i = 0;
+    while(i < updates.length) {
+      if(updates[i].idx > start) started = true;
       if(started == true && state == OFFVAL) fullOverlap = false;
-      if(updates[i].idx >= end) break;
+      if(updates[i].idx > end) return fullOverlap;
       if(updates[i].style == style) state = updates[i].val || OFFVAL;
+      curIdx = updates[i].idx;
+      i++;
     }
-    if(updates.length == 0) return false;
     if(started == false || updates[updates.length-1].idx < end) return false; // never started, thus can't overlap
     return fullOverlap;
   }
@@ -149,7 +147,6 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
   // Merges updates together, to reduce the number.
   // TODO: Create a "default" styling applied to the whole div, and updates of the "default" are removed/ignored.
   function mergeUpdates(updates: Update[]): Update[] {
-    console.log("Merging updates: ", updates);
     const nums: Record<string, number> = {};
     const vals: Record<string, string> = {};
     for (let i = 0; i < stylingTypes.length; i++) {
@@ -177,9 +174,7 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
         vals[styleKey] = updates[i].val || OFFVAL;
         newUpdates.push(updates[i]); // change to new val
       }
-      
     }
-    console.log(newUpdates);
     return newUpdates;
   }
 
@@ -193,7 +188,7 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       if(state.italic != OFFVAL) styles+='font-style:italic;';
       const decorations = [
         state.underline != OFFVAL ? 'underline' : '',
-        state.strike != OFFVAL ? 'line-through' : '', // getting ready for strikethrough text, not implemented yet.
+        state.strike != OFFVAL ? 'line-through' : '',
       ].filter(Boolean).join(' ');
       if(decorations) styles+=`text-decoration:${decorations};`;
       if(state.fontFamily != OFFVAL) styles+='font-family:'+state.fontFamily+';';
@@ -216,22 +211,29 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
     return html;
   }
 
-  useEffect(() => { // On save, save this to the db, and also needs to be loaded from the db or stored somewhere ig... maybe in a file?
+  useEffect(() => { // Redundant code, it's useless!
     if (!element) return;
     const stored = element.getAttribute('data-styling-updates');
     if (stored) {
       try {
         const parsed = JSON.parse(stored) as Update[];
         updatesRef.current = parsed;
-      } catch (err) {
-        console.warn('Failed to parse stored styling updates', err);
-      }
+      } catch (err) {console.warn('Failed to parse stored styling updates', err);}
     }
   }, [element]);
   
 
   // apply style to specific highlighted chars
   const applyStyleToSelection = (property: string, value: string) => {
+    if (element) {
+      const stored = element.getAttribute('data-styling-updates');
+      if (stored) { // On save, save this to the db, and also needs to be loaded from the db or stored somewhere ig... maybe in a file?
+        try {
+          const parsed = JSON.parse(stored) as Update[];
+          updatesRef.current = parsed;
+        } catch (err) {console.warn('Failed to parse stored styling updates', err);}
+      }
+    }
     const selection = window.getSelection();
     if (!selection || selection.rangeCount === 0) {
       if (element) {
@@ -262,9 +264,6 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       const token = propertyToType[property]; // holds the queue for now, remove and replace with a db query
       if (token) {
         let updates = updatesRef.current;
-        // updates.push(new Update(start, token, value || "1"));
-        // updates.push(new Update(end, token, OFFVAL));
-        // updates.sort((a, b) => a.idx - b.idx); // Lazy way, instead should do binary insertion for O(logn) instead of O(nlogn).
         console.log('stylingUpdates presweep:', start, " ", token, " ", end, " ", value, " ", updates);
         console.log('fulloverlapcheck', fullOverlapCheck(start, end, token, updates))
         if(fullOverlapCheck(start, end, token, updates)) updates = insertUpdate(start, end, token, OFFVAL, updates);
@@ -316,21 +315,19 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
   }
 
   function toggleBold() {
-    const isBold = fontWeight >= 700;
-    setFontWeight(isBold ? 400 : 700)
     applyStyleToSelection('font-weight', '700');
   }
 
   function toggleItalic() {
-    const nextState = !italics;
-    toggleItalics(nextState);
     applyStyleToSelection('font-style', 'italic');
   }
 
   function toggleUnderlined() {
-    const nextState = !underline;
-    toggleUnderline(nextState);
     applyStyleToSelection('text-decoration-line', 'underline');
+  }
+
+  function toggleStrikethrough() {
+    applyStyleToSelection('strike', 'strike');
   }
 
   // using buttons to increment/decrement 
@@ -462,6 +459,9 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
                 </li>
                 <li>
                   <button onClick={toggleUnderlined}>U</button>
+                </li>
+                <li>
+                  <button onClick={toggleStrikethrough}>S</button>
                 </li>
               </ul>
             </div>
