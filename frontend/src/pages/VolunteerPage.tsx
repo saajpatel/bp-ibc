@@ -1,14 +1,20 @@
 import Navbar from '../components/site/Navbar'
 import Footer from '../components/site/Footer'
-import VolunteerHelp from '../components/site/VolunteerHelp'
+import VolunteerInfo from '../components/site/volunteer_page/VolunteerInfo'; 
+import VolunteerHelp from '../components/site/volunteer_page/VolunteerHelp'
+import VolunteerLooksLike from '../components/site/volunteer_page/VolunteerLooksLike'; 
+import VolunteerGetInvolved from '../components/site/volunteer_page/VolunteerGetInvolved'; 
 
 function VolunteerPage() {
+
+
     return (
-        <>
+        <>            
             <Navbar/> 
-            <h1>Welcome to the Volunteer Page</h1>
-            <p>This is the main content area.</p>
+            <VolunteerInfo/> 
+            <VolunteerLooksLike/> 
             <VolunteerHelp/>
+            <VolunteerGetInvolved/> 
             <Footer/>
         </>
     )
