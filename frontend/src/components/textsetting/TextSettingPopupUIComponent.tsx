@@ -12,7 +12,6 @@ interface TextSettingPopupUIProps {
 
 function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIProps) {
   const popupRef = useRef<HTMLDivElement>(null);
-  const savedSelectionRef = useRef<Range | null>(null);
   const updatesRef= useRef<Update[]>([]);
   const uiContext = useContext(UIContext);
   const state = uiContext?.state;
@@ -30,6 +29,7 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
   const OFFVAL = "0"; // constant because not sure if "0" or "-1" is better for off, needs to be a string to hold value (ex. bold 700)
 
   const stylingTypes = ["bold", "italic", "underline", "strike", "fontFamily", "fontSize"]; // everything should depend on this
+  const isInvertible = ["bold", "italic", "underline"];
   const propertyToType: Record<string, string | undefined> = { // this can be refactored out.
     'font-weight': 'bold',
     'font-style': 'italic',
@@ -56,18 +56,19 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
     }
   }
 
+  // Inserts an update.
   // TODO: Improve by using binary search instead of linear search later, also refactor the whole thing. Control structure sucks right now
-  function sweepScan(start: number, end: number, style: string, val: string, updates: Update[]) {
-    // console.log("sweepScan called with: ", start, end, style, val, updates);
+  function insertUpdate(start: number, end: number, style: string, val: string, updates: Update[]) {
+    // console.log("insertUpdate called with: ", start, end, style, val, updates);
     let started = false, ended = false;
     let endVal = OFFVAL;
     let lastIdx = 0;
     let newUpdates: Update[] = [];
     let state = OFFVAL; // could be merged with endVal likely?
     for(let i = 0; i < updates.length; i++) { // convert to a while loop later for cleaner code.
-      // console.log("sweepScan processing: ", updates[i]);
+      // console.log("insertUpdate processing: ", updates[i]);
       // for(let i = 0; i < newUpdates.length; i++) {
-      //   console.log("sweepScan has: ", newUpdates[i]);
+      //   console.log("insertUpdate has: ", newUpdates[i]);
       // }
       
       if(ended == true) { // after the range
@@ -76,8 +77,8 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       }
       if(started == true) { // in the range
         if(updates[i].idx > end) {
-          console.log("Adding end at ", end, " with val ", endVal, "update ", updates[i], " state ", state, " what ", updates[i-1]);
-          if(state == OFFVAL) newUpdates.push(new Update(end, style, endVal));
+          // console.log("Adding end at ", end, " with val ", endVal, "update ", updates[i], " state ", state, " what ", updates[i-1]);
+          if(state != endVal) newUpdates.push(new Update(end, style, endVal));
           newUpdates.push(updates[i]);
           // state = updates[i].val as string;
           ended = true;
@@ -98,36 +99,55 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
       // before the range
       else if(updates[i].style == style && start == updates[i].idx) { // eql
         if(state != val) newUpdates.push(new Update(start, style, val));
-        endVal = updates[i].val || OFFVAL;
+        if(updates[i].style == style) endVal = updates[i].val || OFFVAL;
         started = true;
       }
       else if(lastIdx <= start && start < updates[i].idx) { // start between first and last
         started = true;
-        if(state != val) {
+        if(state != val) { // if starting isn't redundant
           newUpdates.push(new Update(start, style, val));
-          endVal = updates[i].val || OFFVAL;
         }
-        if(updates[i].idx > end) {
-          if(state == OFFVAL) newUpdates.push(new Update(end, style, OFFVAL));
-          ended = true;
+        if(updates[i].idx > end) { // ends before this update
+          console.log("endval is ", endVal, " state ", state);
+          if(val != endVal) newUpdates.push(new Update(end, style, endVal)); // if ending isn't reundant
+          ended = true; 
           newUpdates.push(updates[i]);
         }
-        
-        else if(updates[i].style == style) endVal = updates[i].val || OFFVAL; // same logic as started == true
-        else newUpdates.push(updates[i]);
+        else {
+          if(updates[i].style == style) endVal = updates[i].val || OFFVAL; // same logic as started == true
+          else newUpdates.push(updates[i]);
+        }
       }
       else {
         newUpdates.push(updates[i]);
         if(updates[i].style == style) endVal = updates[i].val || OFFVAL;
         lastIdx = updates[i].idx;
       }
-      state = updates[i].val || OFFVAL;
+      if(updates[i].style == style) state = updates[i].val || OFFVAL;
     }
     if(!started) newUpdates.push(new Update(start, style, val));
     if(!ended) newUpdates.push(new Update(end, style, endVal));
     return newUpdates;
   }
 
+  // Check if it's fully overlapping (and thus needs to be an inverse)
+  function fullOverlapCheck(start: number, end: number, style: string, updates: Update[]) {
+    if(!isInvertible.includes(style)) return false;
+    let started = false, fullOverlap = true;
+    let state = OFFVAL;
+    for(let i = 0; i < updates.length; i++) { 
+      if(updates[i].idx >= start) started = true;
+      if(started == true && state == OFFVAL) fullOverlap = false;
+      if(updates[i].idx >= end) break;
+      if(updates[i].style == style) state = updates[i].val || OFFVAL;
+    }
+    if(updates.length == 0) return false;
+    if(started == false || updates[updates.length-1].idx < end) return false; // never started, thus can't overlap
+    return fullOverlap;
+  }
+
+  // Merges updates together, to reduce the number.
+  // TODO: Create a "default" styling applied to the whole div, and updates of the "default" are removed/ignored.
   function mergeUpdates(updates: Update[]): Update[] {
     console.log("Merging updates: ", updates);
     const nums: Record<string, number> = {};
@@ -246,7 +266,9 @@ function TextSettingPopupUIComponent({ position, onClose}: TextSettingPopupUIPro
         // updates.push(new Update(end, token, OFFVAL));
         // updates.sort((a, b) => a.idx - b.idx); // Lazy way, instead should do binary insertion for O(logn) instead of O(nlogn).
         console.log('stylingUpdates presweep:', start, " ", token, " ", end, " ", value, " ", updates);
-        updates = sweepScan(start, end, token, value, updates);
+        console.log('fulloverlapcheck', fullOverlapCheck(start, end, token, updates))
+        if(fullOverlapCheck(start, end, token, updates)) updates = insertUpdate(start, end, token, OFFVAL, updates);
+        else updates = insertUpdate(start, end, token, value, updates);
         console.log('stylingUpdates premerge:', start, " ", token, " ", end, " ", updates);
         updates = mergeUpdates(updates);
         // console.log('stylingUpdates:', start, " ", token, " ", end, " ", updates);
