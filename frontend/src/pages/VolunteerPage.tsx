@@ -1,9 +1,9 @@
 import Navbar from '../components/site/Navbar'
 import Footer from '../components/site/Footer'
-import VolunteerInfo from '../components/site/VolunteerInfo'; 
-import VolunteerHelp from '../components/site/VolunteerHelp'
-import VolunteerLooksLike from '../components/site/VolunteerLooksLike'; 
-import VolunteerGetInvolved from '../components/site/VolunteerGetInvolved'; 
+import VolunteerInfo from '../components/site/volunteer_page/VolunteerInfo'; 
+import VolunteerHelp from '../components/site/volunteer_page/VolunteerHelp'
+import VolunteerLooksLike from '../components/site/volunteer_page/VolunteerLooksLike'; 
+import VolunteerGetInvolved from '../components/site/volunteer_page/VolunteerGetInvolved'; 
 
 function VolunteerPage() {
 
