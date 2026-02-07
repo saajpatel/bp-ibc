@@ -1,7 +1,7 @@
 import './VolunteerGetInvolved.css'
-import exclamationMark from '../../../assets/exclamation-mark.svg'; 
-import whiteArrow from '../../../assets/white-arrow.svg'; 
-import greenBg from '../../../assets/green-backdrop.svg'; 
+import exclamationMark from '/src/assets/volunteer/exclamationMark.svg'; 
+import whiteArrow from '/src//assets/volunteer/whiteArrow.svg'; 
+import greenBg from '/src/assets/shared/greenBackground.svg'; 
 
 function VolunteerGetInvolved() {
 

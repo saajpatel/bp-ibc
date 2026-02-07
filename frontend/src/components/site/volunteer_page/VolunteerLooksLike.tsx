@@ -1,5 +1,5 @@
 import './VolunteerLooksLike.css'
-import greenBg from '../../../assets/green-backdrop.svg'; 
+import greenBg from '/src/assets/shared/greenBackground.svg'; 
 
 function VolunteerLooksLike() {
     return (

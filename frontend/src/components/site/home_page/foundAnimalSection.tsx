@@ -21,7 +21,7 @@ function FoundAnimalSection(){
                     </div>
                 </div>
                 <div id="main-image">
-                    <img src="src/assets/baby-animal.jpg" alt="image of baby animal"/>
+                    <img src="src/assets/home/babyAnimal.jpg" alt="image of baby animal"/>
                 </div>
             </div>
         </section>

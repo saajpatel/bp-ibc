@@ -65,7 +65,7 @@ li {
     justify-content: space-evenly;
     height: fit-content;
     padding: 40px 20px 40px 20px;
-    background-image: url('src/assets/green-backdrop.svg');
+    background-image: url('/src/assets/shared/greenBackground.svg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -257,7 +257,7 @@ li {
     justify-content: space-evenly;
     height: fit-content;
     padding: 40px 20px 40px 20px;
-    background-image: url('src/assets/green-backdrop.svg');
+    background-image: url('/src/assets/shared/greenBackground.svg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

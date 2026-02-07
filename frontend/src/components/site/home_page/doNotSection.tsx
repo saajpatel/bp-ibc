@@ -1,11 +1,14 @@
-import './homepageSection.css';
+import './homepageSection.css'
+import GreenArrow from '/src/assets/home/greenArrowThin.svg' 
+import ProhibitSign from '/src/assets/home/prohibitSign.svg'
+
 function DoNotSection(){
     return (  
         <section>
             <div className="homepage-white">
                 <div id="do-not-card">
                     <div id="do-not-header">
-                        <img src="src/assets/prohibit-sign.svg" alt="no-sign"/>
+                        <img src={ProhibitSign} alt="prohibit sign"/> 
                         <h3>Please Do Not Feed or Move Wildlife</h3>
                     </div>
                     <div id="text-section">
@@ -16,7 +19,7 @@ function DoNotSection(){
                         </ul>
                         <div id="link-green">
                             <a href="/education">Learn if the animal needs help</a>
-                            <img src="src/assets/green-arrow-thin.svg" alt="arrow-right"/>
+                            <img src={GreenArrow} alt="green right arrow"/>
                         </div>
                     </div>
                 </div>
