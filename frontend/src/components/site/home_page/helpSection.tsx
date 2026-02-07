@@ -1,5 +1,10 @@
 import './homepageSection.css';
 import { useNavigate } from 'react-router-dom';
+import GreenLeaf from '/src/assets/home/greenLeaf.svg';
+import Paw from '/src/assets/home/bluePaw.svg';
+import LeftHeart from '/src/assets/shared/leftHeart.svg';
+import RightHeart from '/src/assets/shared/rightHeart.svg';
+import GreenArrow from '/src/assets/shared/greenArrowThin.svg'
 
 function HelpSection(){
     const navigate = useNavigate();
@@ -10,22 +15,22 @@ function HelpSection(){
                 <div className="gallery">
                     <div className="card-content">
                         <div className="icons">
-                            <img src="src/assets/home/greenLeaf.svg" alt="green-leaf"/>
+                            <img src={GreenLeaf} alt="green leaf"/>
                         </div>
                         <h3 className="card-title">Wildlife Education</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh eu</p>
                     </div>
                     <div className="card-content">
                         <div className="icons">
-                            <img src="src/assets/home/bluePaw.svg" alt="blue-paw"/>
+                            <img src={Paw} alt="blue paw"/>
                         </div>
                         <h3 className="card-title">Guidance & Support</h3>
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh eu</p>
                         </div>
                     <div className="card-content">
                         <div className="icons">
-                            <img src="src/assets/shared/leftHeart.svg" alt="left-hearthands"/>
-                            <img src="src/assets/shared/rightHeart.svg" alt="right-hearthands"/>
+                            <img src={LeftHeart} alt="left-hearthands"/>
+                            <img src={RightHeart} alt="right-hearthands"/>
                         </div>
                         <h3 className="card-title">Community Awareness</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, nisl, sed diam nonummy nibh eu</p>
@@ -41,7 +46,7 @@ function HelpSection(){
                     </button>
                     <button onClick={() => navigate('/updates')} id="page-button"> {/*Placeholder used*/}
                         Follow Our Updates
-                        <img src="src/assets/greenArrowThin.svg" alt="arrow-right"/>
+                        <img src={GreenArrow} alt="arrow right"/>
                     </button>
                 </div>
             </div>

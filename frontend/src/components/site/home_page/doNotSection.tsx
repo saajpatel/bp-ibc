@@ -1,5 +1,5 @@
 import './homepageSection.css'
-import GreenArrow from '/src/assets/home/greenArrowThin.svg' 
+import GreenArrow from '/src/assets/shared/greenArrowThin.svg' 
 import ProhibitSign from '/src/assets/home/prohibitSign.svg'
 
 function DoNotSection(){

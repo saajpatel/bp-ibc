@@ -17,7 +17,7 @@ function FoundAnimalSection(){
                     </button>
                     <div id="link-white">
                         <a href="/volunteer">I want to help in other ways</a>
-                        <img src="src/assets/white-arrow-thin.svg" alt="arrow-right"/>
+                        <img src="src/assets/shared/whiteArrow.svg" alt="arrow right"/>
                     </div>
                 </div>
                 <div id="main-image">
