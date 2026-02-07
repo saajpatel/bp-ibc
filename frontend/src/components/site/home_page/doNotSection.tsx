@@ -1,4 +1,4 @@
-import './homepageSection.css'
+import './homePage.css'
 import GreenArrow from '/src/assets/shared/greenArrowThin.svg' 
 import ProhibitSign from '/src/assets/home/prohibitSign.svg'
 

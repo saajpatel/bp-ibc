@@ -1,4 +1,6 @@
-import './homepageSection.css';
+import './homePage.css';
+import WhiteArrow from '/src/assets/shared/whiteArrow.svg'
+import BabyAnimal from '/src/assets/home/babyAnimal.jpg'
 import { useNavigate } from 'react-router-dom';
 
 function FoundAnimalSection(){
@@ -17,11 +19,11 @@ function FoundAnimalSection(){
                     </button>
                     <div id="link-white">
                         <a href="/volunteer">I want to help in other ways</a>
-                        <img src="src/assets/shared/whiteArrow.svg" alt="arrow right"/>
+                        <img src={WhiteArrow} alt="arrow right"/>
                     </div>
                 </div>
                 <div id="main-image">
-                    <img src="src/assets/home/babyAnimal.jpg" alt="image of baby animal"/>
+                    <img src={BabyAnimal} alt="image of baby animal"/>
                 </div>
             </div>
         </section>

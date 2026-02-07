@@ -1,4 +1,4 @@
-import './homepageSection.css';
+import './homePage.css';
 import { useNavigate } from 'react-router-dom';
 import GreenLeaf from '/src/assets/home/greenLeaf.svg';
 import Paw from '/src/assets/home/bluePaw.svg';
