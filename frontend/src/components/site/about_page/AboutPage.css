@@ -1,5 +1,36 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
+#about-ibc * {
+    margin: 0;
+    padding: 0;
+    font-family: "DM Sans", sans-serif;
+}
+
+#about-ibc {
+    height: 28.89vw;
+    background-color: #f5edea;
+    position: relative;
+}
+
+#about-ibc h2 {
+    color: #324436;
+    font-size: 4.7vw;
+    font-weight: 700;
+    position: absolute;
+    top: 6.2vw;
+    left: 8.27vw;
+}
+
+#about-ibc p {
+    width: 64vw;
+    color: #324436;
+    font-size: 1.57vw;
+    font-weight: 400;
+    position: absolute;
+    top: 14.19vw;
+    left: 8.57vw;
+}
+
 #education * {
     margin: 0;
     padding: 0;
@@ -32,6 +63,7 @@
     padding-top: 7.15vw;
     justify-items: center;
     margin: 0 3.13vw;
+    gap: 20px;
 }
 
 #education #grid-1 > div {
@@ -84,4 +116,40 @@
     font-weight: 400;
     width: 34.99vw;
     padding-top: 4.07vw;
+}
+
+#our-mission * {
+    margin: 0;
+    padding: 0;
+    font-family: "DM Sans", sans-serif;
+}
+
+#our-mission {
+    background-image: url("../../assets/green_background.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    
+    height: 33.68vw;
+    background-color: #3b4d3f;
+    position: relative;
+}
+
+#our-mission h2 {
+    color: #ffffff;
+    font-size: 3.7vw;
+    font-weight: 500;
+    position: absolute;
+    top: 7.14vw;
+    left: 8.42vw;
+}
+
+#our-mission p {
+    width: 67.9vw;
+    color: #DCDACD;
+    font-size: 1.57vw;
+    font-weight: 400;
+    position: absolute;
+    top: 14.66vw;
+    left: 8.51vw;
 }

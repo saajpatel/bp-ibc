@@ -1,4 +1,4 @@
-import './EducationQuestions.css'
+import './EducationPage.css'
 import bandage from '/src/assets/education/bandageIcon.svg'
 import babyAnimal from '/src/assets/education/babyAnimalIcon.svg'
 import warning from '/src/assets/education/warningIcon.svg'
@@ -6,7 +6,7 @@ import warning from '/src/assets/education/warningIcon.svg'
 function EducationQuestions() {
     return (
         <div className="education_questions">
-            <h1 style={{fontSize: '60px', fontWeight: '500'}}>Before You Act, Ask These Questions</h1>
+            <h1>Before You Act, Ask These Questions</h1>
             <div className="education_grid">
                 <div className="education_item">
                     <img src={bandage} alt="Bandage"/>
@@ -30,7 +30,7 @@ function EducationQuestions() {
                     </p>
                 </div>
             </div>
-            <h1 style={{fontSize: '60px', fontWeight: '500'}}>Please Do Not</h1>
+            <h1>Please Do Not</h1>
             <div className="education_warnings">
                 <ul>
                     <li>Feed wild animals food or water</li>

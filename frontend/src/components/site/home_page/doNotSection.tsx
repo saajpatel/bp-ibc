@@ -1,4 +1,5 @@
-import './homePage.css'
+import '/src/components/site/global.css'
+import './HomePage.css'
 import GreenArrow from '/src/assets/shared/greenArrowThin.svg' 
 import ProhibitSign from '/src/assets/home/prohibitSign.svg'
 

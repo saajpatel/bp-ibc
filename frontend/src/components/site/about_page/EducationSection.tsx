@@ -1,4 +1,4 @@
-import './EducationSection.css';
+import './AboutPage.css';
 import shieldIcon from '/src/assets/about/shieldIcon.svg'
 import heartIcon from '/src/assets/about/heartIcon.svg'
 import lockIcon from '/src/assets/about/lockIcon.svg'

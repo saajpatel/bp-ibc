@@ -1,10 +1,8 @@
-<head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="MissionSection.css">
-</head>
+import './AboutPage.css';
 
-<body>
-    <section>
+function MissionSection(){
+    return (
+        <section id="our-mission">
         <h2>Our Mission</h2>
         <p>
             Our mission is to reduce unnecessary harm to wildlife by educating the public on when —
@@ -12,5 +10,8 @@
             ally behaving naturally. Through education and guidance, we help protect wildlife, their
             families, and the people trying to help them.
         </p>
-    </section>
-</body>
+        </section>
+    );
+}
+
+export default MissionSection;

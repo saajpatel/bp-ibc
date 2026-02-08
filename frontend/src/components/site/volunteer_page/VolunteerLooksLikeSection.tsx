@@ -1,4 +1,4 @@
-import './VolunteerLooksLike.css'
+import './VolunteerPage.css'
 import greenBg from '/src/assets/shared/greenBackground.svg'; 
 
 function VolunteerLooksLike() {

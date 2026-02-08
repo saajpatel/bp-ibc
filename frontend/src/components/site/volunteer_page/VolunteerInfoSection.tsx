@@ -1,4 +1,4 @@
-import './VolunteerInfo.css'
+import './VolunteerPage.css'
 
 function VolunteerInfo() {
     return (

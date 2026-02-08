@@ -1,4 +1,4 @@
-import './AboutIBCSection.css';
+import './AboutPage.css'
 
 function AboutIBCSection(){
     return (
