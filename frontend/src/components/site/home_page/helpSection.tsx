@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function HelpSection(){
     const navigate = useNavigate();
     return (
-        <section>
+        <section id="home-page-section">
             <div id="help-section">
                 <h3>How Itty Bitty Critter Helps</h3>
                 <div className="gallery">

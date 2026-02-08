@@ -5,7 +5,7 @@ function FoundAnimalSection(){
     const navigate = useNavigate();
 
     return (
-        <section id="found-animal">
+        <section id="home-page-section">
             <div className="homepage-green">
                 <div id="text-section">
                     <h1>Found a wild animal?</h1>

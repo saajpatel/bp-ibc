@@ -1,7 +1,7 @@
 import './homepageSection.css';
 function DoNotSection(){
     return (  
-        <section>
+        <section id="home-page-section">
             <div className="homepage-white">
                 <div id="do-not-card">
                     <div id="do-not-header">
