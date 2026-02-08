@@ -1,12 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
-* {
+#home-page-section {
+    border: 2px black solid;
+}
+
+#home-page-section * {
     margin: 0;
     padding: 0;
     font-family: "DM Sans", sans-serif;
 }
 
-section {
+#home-page-section {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -15,31 +19,31 @@ section {
     flex-shrink: 0;
 }
 
-h1 {
+#home-page-section h1 {
     color: #FFFFFF;
     font-size: 90px;
     font-weight: 700;
 }
 
-h2 {
+#home-page-section h2 {
     color: #324436;
     font-size: 90px;
     font-weight: 700;
 }
 
-h3 {
+#home-page-section h3 {
     color: #DCDACD;
     font-size: 60px;
     font-weight: 500;
 }
 
-h4 {
+#home-page-section h4 {
     color: #DCDACD;
     font-size: 38px;
     font-weight: 400;
 }
 
-p {
+#home-page-section p {
     width: 1200px;
     color: #324436;
     font-size: 30px;
@@ -49,7 +53,7 @@ p {
     max-width: 100%;
 }
 
-li {
+#home-page-section li {
     color: #324436;
     font-size: 28px;
     font-weight: 400;
@@ -67,7 +71,7 @@ li {
     padding: 40px 20px 40px 20px;
     background-image: url('src/assets/green-backdrop.svg');
     background-size: cover;
-    background-position: center;
+    background-position: top left;
     background-repeat: no-repeat;
     box-sizing: border-box;
 }
