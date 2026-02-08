@@ -9,20 +9,20 @@ import GreenArrow from '/src/assets/shared/greenArrowThin.svg'
 function HelpSection(){
     const navigate = useNavigate();
     return (
-        <section>
+        <section id="home-page-section">
             <div id="help-section">
                 <h3>How Itty Bitty Critter Helps</h3>
                 <div className="gallery">
                     <div className="card-content">
                         <div className="icons">
-                            <img src={GreenLeaf} alt="green leaf"/>
+                            <img src={GreenLeaf} alt="green-leaf"/>
                         </div>
                         <h3 className="card-title">Wildlife Education</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh eu</p>
                     </div>
                     <div className="card-content">
                         <div className="icons">
-                            <img src={Paw} alt="blue paw"/>
+                            <img src={Paw} alt="blue-paw"/>
                         </div>
                         <h3 className="card-title">Guidance & Support</h3>
                             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh eu</p>
@@ -46,7 +46,7 @@ function HelpSection(){
                     </button>
                     <button onClick={() => navigate('/updates')} id="page-button"> {/*Placeholder used*/}
                         Follow Our Updates
-                        <img src={GreenArrow} alt="arrow right"/>
+                        <img src={GreenArrow} alt="arrow-right"/>
                     </button>
                 </div>
             </div>
