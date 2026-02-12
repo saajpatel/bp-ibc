@@ -114,6 +114,13 @@ function EditorPage() {
               Clear shared draft
             </button>
             <SaveButton />
+            <button
+              type="button"
+              className="editor-button editor-button--ghost"
+              title="Publish changes to live site"
+            >
+              Publish
+            </button>
           </div>
         </div>
         <div className="editor-canvas">
