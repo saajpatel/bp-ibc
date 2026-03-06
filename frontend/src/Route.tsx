@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import SignInPage from './pages/SignInPage';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import EducationPage from './pages/EducationPage';
@@ -14,8 +15,11 @@ export default function AppRoutes() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/education" element={<EducationPage />} />
             <Route path="/volunteer" element={<VolunteerPage />} />
-            <Route path="/edit" element={<App />} />
-            <Route path="/edit/:id" element={<EditorPage />} />
+            <Route path="/edit">
+                <Route index element={<App />} />
+                <Route path="signin" element={<SignInPage />} />
+                <Route path=":id" element={<EditorPage />} />
+            </Route>
             <Route path="*" element={<div>Page not found</div>} />
         </Routes>
     );
