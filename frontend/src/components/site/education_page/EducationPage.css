@@ -76,7 +76,7 @@
 }
 
 #not-every-animal {
-    background-image: url('src/assets/shared/greenBackground.svg');
+    background-image: url('../../../assets/shared/greenBackground.svg');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
