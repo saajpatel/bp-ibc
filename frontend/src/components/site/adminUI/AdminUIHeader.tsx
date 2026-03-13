@@ -1,6 +1,6 @@
 import './AdminUIHeader.css';
-import eye_icon from '/src/assets/adminUI/Eye.svg';
-import check_icon from '/src/assets/adminUI/Check.svg';
+import eye_icon from '../../../assets/adminUI/Eye.svg';
+import check_icon from '../../../assets/adminUI/Check.svg';
 
 
 function AdminUIHeader() {

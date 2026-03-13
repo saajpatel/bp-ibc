@@ -1,7 +1,7 @@
 import './EducationPage.css'
-import bandage from '/src/assets/education/bandageIcon.svg'
-import babyAnimal from '/src/assets/education/babyAnimalIcon.svg'
-import warning from '/src/assets/education/warningIcon.svg'
+import bandage from '../../../assets/education/bandageIcon.svg'
+import babyAnimal from '../../../assets/education/babyAnimalIcon.svg'
+import warning from '../../../assets/education/warningIcon.svg'
 
 function EducationQuestions() {
     return (
